@@ -425,6 +425,11 @@ class Router(object):
         if not targets:
             raise HTTPError(404, "Not found: " + repr(environ['PATH_INFO']))
         method = environ['REQUEST_METHOD'].upper()
+        if method == "POST":
+            # handle X-HTTP-Method-Override transparently if present
+            override = request.headers["X-HTTP-Method-Override"]
+            if override:
+                method = override.upper()
         if method in targets:
             return targets[method], urlargs
         if method == 'HEAD' and 'GET' in targets:
